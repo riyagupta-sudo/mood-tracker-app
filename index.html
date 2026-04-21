@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mood Tracker Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-menu">
+                    <div class="menu-item active has-submenu">
+                        <div class="menu-title">
+                            <div class="title-left"><i class="fa-solid fa-border-all"></i> Dashboard</div>
+                            <i class="fa-solid fa-chevron-down toggle-icon"></i>
+                        </div>
+                        <ul class="submenu">
+                            <li class="active"><a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;"><span class="dot"></span> Mood Tracker</a></li>
+                            <li><a href="health_insight.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Health Insight</a></li>
+                            <li><a href="personal_goals.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Personal Goals</a></li>
+                        </ul>
+                    </div>
+                    <a href="community.html" style="text-decoration:none;" class="menu-item">
+                        <div class="menu-title text-gray">
+                            <div class="title-left"><i class="fa-solid fa-users"></i> Community</div>
+                        </div>
+                    </a>
+                    
+                    <div class="menu-section-title">SETTINGS</div>
+                    <a href="settings.html" style="text-decoration:none;" class="menu-item">
+                        <div class="menu-title text-gray">
+                            <div class="title-left"><i class="fa-solid fa-gear"></i> Settings</div>
+                        </div>
+                    </a>
+                    <a href="notifications.html" style="text-decoration:none;" class="menu-item">
+                        <div class="menu-title text-gray">
+                            <div class="title-left"><i class="fa-regular fa-bell"></i> Notification</div>
+                        </div>
+                    </a>
+                </div>
+
+                <div class="creator-stamp" style="margin-top: auto; padding: 20px 15px; border-radius: 16px; background: linear-gradient(135deg, rgba(90, 64, 242, 0.08), rgba(90, 64, 242, 0.02)); border: 1px solid rgba(90, 64, 242, 0.2); text-align: center; transition: all 0.3s ease;">
+                    <div style="font-size: 11px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; font-weight: 600;">Designed & Built By</div>
+                    <div style="font-size: 16px; font-weight: 700; color: var(--primary-purple); display: flex; align-items: center; justify-content: center; gap: 8px;">
+                        <i class="fa-solid fa-code"></i> Riya Gupta
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <div id="header-root">
+                    <!-- React Header will load here -->
+                </div>
+
+                <div class="grid-layout">
+                    <!-- Top Row -->
+                    <div id="mood-selector-root">
+                        <!-- React Component will be injected here -->
+                    </div>
+
+                    <div id="weekly-trend-root">
+                        <!-- React WeeklyTrend will load here -->
+                    </div>
+
+                    <div class="card daily-quote">
+                        <h2 id="current-day">17th</h2>
+                        <p class="month" id="current-month">November</p>
+                        <p class="quote">Focus on what you can control today...</p>
+                    </div>
+
+                    <!-- Bottom Row -->
+                    <div id="daily-trend-chart-root">
+                        <!-- React DailyTrendChart will load here -->
+                    </div>
+
+                    <div id="side-panel-root">
+                        <!-- React SidePanel will load here -->
+                    </div>
+                </div>
+                
+                <div id="daily-insight-root">
+                    <!-- React DailyInsight will load here -->
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="app.js"></script>
+    <script type="module" src="/main.jsx"></script>
+    <script>
+        // Minimal script for non-react parts
+        document.addEventListener('DOMContentLoaded', () => {
+             // Basic sidebar interactivity
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    if(e.target.closest('.submenu')) return;
+                    menuItems.forEach(mi => mi.classList.remove('active'));
+                    item.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
