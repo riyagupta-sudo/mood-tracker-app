@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coming Soon - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .coming-soon-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            background-color: var(--primary-purple-light);
+        }
+        .coming-soon-card {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            max-width: 500px;
+        }
+        h1 { color: var(--primary-purple); font-size: 32px; margin-bottom: 20px; }
+        p { color: var(--text-gray); margin-bottom: 30px; line-height: 1.6; }
+        .back-btn {
+            background-color: var(--primary-purple);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+        .back-btn:hover { background-color: var(--primary-purple-dark); }
+    </style>
+</head>
+<body>
+    <div class="coming-soon-container">
+        <div class="coming-soon-card">
+            <h1><span id="page-name">This feature</span> is coming soon!</h1>
+            <p>We are working hard to build this section of the Smart Mood Tracker. Stay tuned for new updates and features to help you understand yourself better.</p>
+            <a href="index.html" class="back-btn">Go Back Home</a>
+        </div>
+    </div>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const pageName = urlParams.get('page');
+        if (pageName) {
+            document.getElementById('page-name').textContent = pageName;
+            document.title = `${pageName} - Coming Soon`;
+        }
+    </script>
+</body>
+</html>

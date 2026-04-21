@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .notifications-container { max-width: 600px; margin: 0 auto; }
+        .notification-card {
+            background: white; padding: 20px; border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.02); border: 1px solid #F0F2F5; margin-bottom: 15px;
+            display: flex; align-items: flex-start; gap: 15px; transition: transform 0.2s;
+        }
+        .notification-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.05); }
+        .icon-circle {
+            width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+        }
+        .icon-alert { background: #FFF5F5; color: var(--red); }
+        .icon-info { background: #F0EDFE; color: var(--primary-purple); }
+        .icon-suggestion { background: #EAF9F1; color: var(--green); }
+        .icon-success { background: #FFF9E6; color: #F08C4A; }
+        .notif-content h4 { font-size: 15px; margin-bottom: 5px; color: var(--text-black); }
+        .notif-content p { font-size: 13px; color: var(--text-gray); line-height: 1.5; margin: 0;}
+        .notif-time { font-size: 11px; color: #B0B5C1; margin-top: 8px; display: block; }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="dashboard-container">
+            <aside class="sidebar">
+                <div class="sidebar-menu">
+                    <div class="menu-item has-submenu">
+                        <div class="menu-title">
+                            <div class="title-left"><i class="fa-solid fa-border-all"></i> Dashboard</div>
+                        </div>
+                        <ul class="submenu">
+                            <li><a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Mood Tracker</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <header class="top-header">
+                    <div class="header-titles">
+                        <h1>Notifications</h1>
+                        <p>Your personalized reminders and insights.</p>
+                    </div>
+                    <a href="index.html" class="auth-link-btn">← Back</a>
+                </header>
+
+                <div class="notifications-container" id="notifications-list">
+                    <div style="text-align: center; color: var(--text-gray); margin-top: 50px;">
+                        <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+                        <p style="margin-top: 15px;">Loading your updates...</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const list = document.getElementById('notifications-list');
+            const token = localStorage.getItem('token');
+            if (!token) {
+                list.innerHTML = '<div style="text-align:center;margin-top:50px;"><p>Please log in.</p></div>';
+                return;
+            }
+            try {
+                const response = await fetch('http://localhost:3000/api/moods', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                const notifications = [];
+                const now = new Date();
+                const todayStr = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                const yesterdayStr = new Date(now.getTime() - 86400000 - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+
+                if (!data.some(m => m.date === todayStr)) {
+                    notifications.push({ type: 'alert', icon: 'fa-triangle-exclamation', title: 'Daily Reminder', text: "Don't forget to log your mood today!", time: 'Just now' });
+                }
+                const yesterdayLog = data.find(m => m.date === yesterdayStr);
+                if (yesterdayLog) {
+                    notifications.push({ type: 'info', icon: 'fa-regular fa-calendar-check', title: `Yesterday's Recap: ${yesterdayLog.mood}`, text: `You felt ${yesterdayLog.mood.toLowerCase()} yesterday.`, time: '1 day ago' });
+                }
+                const recentLogs = data.slice(-5);
+                if (recentLogs.some(m => m.mood === 'Anxious')) {
+                    notifications.push({ type: 'suggestion', icon: 'fa-leaf', title: 'Take a breather', text: "Try a grounding meditation for your recent anxiety.", time: 'Recommendation' });
+                }
+                if (notifications.length === 0) {
+                    notifications.push({ type: 'success', icon: 'fa-check-double', title: "You're all caught up!", text: "No new notifications.", time: '' });
+                }
+
+                list.innerHTML = '';
+                notifications.forEach(notif => {
+                    const card = document.createElement('div');
+                    card.className = 'notification-card';
+                    card.innerHTML = `
+                        <div class="icon-circle icon-${notif.type}"><i class="fa-solid ${notif.icon}"></i></div>
+                        <div class="notif-content">
+                            <h4>${notif.title}</h4>
+                            <p>${notif.text}</p>
+                            ${notif.time ? `<span class="notif-time">${notif.time}</span>` : ''}
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            } catch (error) {
+                list.innerHTML = '<p style="text-align:center;margin-top:50px;">Error loading notifications.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

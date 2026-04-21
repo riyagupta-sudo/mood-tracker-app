@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .settings-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .settings-section {
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+            border: 1px solid #F0F2F5;
+            margin-bottom: 25px;
+        }
+        .settings-section h3 {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: var(--text-black);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #F0F2F5;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-black);
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #E4EBF4;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .save-btn {
+            background-color: var(--primary-purple);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .save-btn:hover { background-color: var(--primary-purple-dark); }
+        .danger-btn {
+            background-color: #FFF5F5;
+            color: var(--red);
+            border: 1px solid var(--red);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .danger-btn:hover { background-color: var(--red); color: white; }
+        
+        /* Toggle Switch */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #F8F9FB;
+            padding: 15px 20px;
+            border-radius: 12px;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px; width: 18px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--primary-purple); }
+        input:checked + .slider:before { transform: translateX(24px); }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-menu">
+                    <a href="index.html" class="menu-item" style="text-decoration:none;">
+                        <div class="menu-title text-gray">
+                            <div class="title-left"><i class="fa-solid fa-border-all"></i> Dashboard</div>
+                        </div>
+                    </a>
+                    
+                    <div class="menu-section-title">SETTINGS</div>
+                    <div class="menu-item active">
+                        <div class="menu-title">
+                            <div class="title-left"><i class="fa-solid fa-gear"></i> Settings</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <header class="top-header">
+                    <div class="header-titles">
+                        <h1>Settings</h1>
+                        <p>Manage your account and preferences.</p>
+                    </div>
+                    <a href="index.html" class="auth-link-btn">← Back</a>
+                </header>
+
+                <div class="settings-container">
+                    <div class="settings-section">
+                        <h3><i class="fa-regular fa-user"></i> Profile Settings</h3>
+                        <div class="form-group">
+                            <label>Change Username</label>
+                            <input type="text" placeholder="Enter new username" value="Riya Gupta">
+                        </div>
+                        <button class="save-btn">Save Changes</button>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fa-solid fa-palette"></i> Appearance</h3>
+                        <div class="switch-container">
+                            <div>
+                                <h4 style="font-size: 15px; margin-bottom: 4px;">Dark Mode</h4>
+                                <p style="font-size: 13px; color: var(--text-gray);">Switch to a darker theme for night time.</p>
+                            </div>
+                            <label class="switch">
+                                <input type="checkbox" id="darkModeToggle">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3><i class="fa-solid fa-shield-halved"></i> Data Management</h3>
+                        <p style="font-size: 14px; color: var(--text-gray); margin-bottom: 20px;">Permenantly delete all your tracked mood entries, habits, and history.</p>
+                        <button class="danger-btn"><i class="fa-solid fa-trash-can"></i> Reset All Mood Data</button>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        // Apply theme immediately on load
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.getElementById('darkModeToggle').checked = true;
+        }
+
+        // Toggle Event Listener
+        document.getElementById('darkModeToggle').addEventListener('change', (e) => {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

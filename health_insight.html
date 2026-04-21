@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Insight - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .insight-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .chart-card { background: white; padding: 25px; border-radius: var(--border-radius); border: 1px solid #F0F2F5; box-shadow: 0 5px 20px rgba(0,0,0,0.02); }
+        .summary-card { background: linear-gradient(135deg, var(--primary-purple), #8367F4); color: white; padding: 30px; border-radius: var(--border-radius); }
+        .summary-card h3 { color: white; margin-bottom: 20px; font-size: 22px; }
+        .stat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
+        .sick-update { background-color: #FFF5F5; border-left: 4px solid var(--red); padding: 15px; border-radius: 8px; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="dashboard-container">
+            <!-- Sidebar (Cloned for consistency) -->
+            <aside class="sidebar">
+                <div class="sidebar-menu">
+                    <div class="menu-item has-submenu">
+                        <div class="menu-title">
+                            <div class="title-left"><i class="fa-solid fa-border-all"></i> Dashboard</div>
+                        </div>
+                        <ul class="submenu">
+                            <li><a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Mood Tracker</a></li>
+                            <li class="active"><a href="health_insight.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;"><span class="dot"></span> Health Insight</a></li>
+                            <li><a href="personal_goals.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Personal Goals</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <header class="top-header">
+                    <div class="header-titles">
+                        <h1>Health Insight</h1>
+                        <p>This section analyzes your mood patterns over time.</p>
+                    </div>
+                    <a href="index.html" class="auth-link-btn">← Back</a>
+                </header>
+
+                <div class="insight-grid">
+                    <div class="chart-card">
+                        <h3>Mood Trends</h3>
+                        <p class="subtitle">Your emotional journey over the past week.</p>
+                        <canvas id="moodChart" height="200"></canvas>
+                    </div>
+
+                    <div>
+                        <div class="summary-card">
+                            <h3>Weekly Breakdown</h3>
+                            <div class="stat-row">
+                                <span><i class="fa-solid fa-star" style="color: #FFD166;"></i> Excited Days</span>
+                                <strong id="excited-days-count">0 Days</strong>
+                            </div>
+                            <div class="stat-row">
+                                <span><i class="fa-solid fa-face-smile"></i> Happy Days</span>
+                                <strong id="happy-days-count">0 Days</strong>
+                            </div>
+                            <div class="stat-row">
+                                <span><i class="fa-solid fa-face-frown"></i> Sad Days</span>
+                                <strong id="sad-days-count">0 Days</strong>
+                            </div>
+                            <div class="stat-row">
+                                <span><i class="fa-solid fa-face-meh"></i> Neutral Days</span>
+                                <strong id="neutral-days-count">0 Days</strong>
+                            </div>
+                            <p id="insight-text" style="font-size: 13px; margin-top: 15px; opacity: 0.9;">Analyzing your data...</p>
+                        </div>
+                        
+                        <div class="sick-update">
+                            <h4 style="color: var(--red); margin-bottom: 5px;"><i class="fa-solid fa-notes-medical"></i> Health Update</h4>
+                            <p id="health-update-text" style="font-size: 13px; color: #555;">No recent tired or anxious logs detected. Keep it up!</p>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                document.getElementById('insight-text').innerText = "Please log in to see your health insights.";
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/moods', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (!response.ok) throw new Error('Failed to fetch data');
+                
+                const data = await response.json();
+                
+                let trackedDateStr = localStorage.getItem('trackedDate');
+                if (!trackedDateStr) {
+                    const d = new Date();
+                    trackedDateStr = new Date(d.getTime() - (d.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                }
+                
+                const endDate = new Date(trackedDateStr + 'T00:00:00');
+                const labels = [];
+                const dataValues = [];
+                const bgColors = [];
+                
+                let excited = 0, happy = 0, sad = 0, neutral = 0, tiredAnxious = 0;
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+                // Loop 7 days backwards from tracked date
+                for (let i = 6; i >= 0; i--) {
+                    const cursor = new Date(endDate.getTime());
+                    cursor.setDate(endDate.getDate() - i);
+                    const dateStr = new Date(cursor.getTime() - (cursor.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+                    
+                    labels.push(dayNames[cursor.getDay()]);
+                    
+                    // Filter logs for this specific date
+                    const dayLogs = data.filter(m => m.date === dateStr);
+                    let avgScore = 0;
+                    let moodLabel = "";
+
+                    if (dayLogs.length > 0) {
+                        avgScore = dayLogs.reduce((acc, current) => acc + current.mood_score, 0) / dayLogs.length;
+                        moodLabel = dayLogs[0].mood; // Use the first log's label for simplicity
+                    }
+                    
+                    if (avgScore > 0) {
+                        let val = 3; 
+                        let color = '#B2A2FC';
+                        
+                        if (avgScore >= 90) { val = 6; color = '#FFA07A'; excited++; }
+                        else if (avgScore >= 80) { val = 5; color = '#FFD166'; happy++; }
+                        else if (avgScore > 40 && avgScore < 80) { val = 3; color = '#8ED1B9'; neutral++; }
+                        else { val = 1; color = '#FA6060'; sad++; }
+
+                        if (moodLabel === 'Tired' || moodLabel === 'Anxious') tiredAnxious++;
+
+                        dataValues.push(val);
+                        bgColors.push(color);
+                    } else {
+                        dataValues.push(0);
+                        bgColors.push('transparent');
+                    }
+                }
+
+                // Update DOM
+                document.getElementById('excited-days-count').innerText = `${excited} Days`;
+                document.getElementById('happy-days-count').innerText = `${happy} Days`;
+                document.getElementById('sad-days-count').innerText = `${sad} Days`;
+                document.getElementById('neutral-days-count').innerText = `${neutral} Days`;
+                
+                if (happy > sad && happy >= neutral) {
+                    document.getElementById('insight-text').innerText = "You've had a mostly positive week! Keep holding onto those good feelings.";
+                } else if (sad > happy) {
+                    document.getElementById('insight-text').innerText = "It's been a tough week. Take things slowly and prioritize self-care.";
+                } else if (excited === 0 && happy === 0 && sad === 0 && neutral === 0) {
+                    document.getElementById('insight-text').innerText = "Track your moods over the week to receive insights here!";
+                } else {
+                    document.getElementById('insight-text').innerText = "Your week has been balanced. Maintain those healthy routines!";
+                }
+                
+                if (tiredAnxious > 0) {
+                    document.getElementById('health-update-text').innerText = `You logged feeling "Tired" or "Anxious" ${tiredAnxious} time(s) recently. Make sure to prioritize sleep and hydration!`;
+                } else {
+                    document.getElementById('health-update-text').innerText = "No recent tired or anxious logs detected. Keep it up!";
+                }
+
+                // Draw Chart
+                const ctx = document.getElementById('moodChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Mood Level',
+                            data: dataValues,
+                            backgroundColor: bgColors,
+                            borderRadius: 8,
+                            borderWidth: 1,
+                            borderColor: bgColors.map(c => c === 'transparent' ? '#EAEAEA' : c)
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: { beginAtZero: true, max: 6, ticks: { callback: function(val) {
+                                if (val===1) return 'Sad'; if (val===3) return 'Neutral'; if (val===5) return 'Happy'; if (val===6) return 'Excited'; return '';
+                            }}}
+                        },
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            } catch (error) {
+                console.error('Error loading health insights:', error);
+                document.getElementById('insight-text').innerText = "Error loading data. Please try again later.";
+            }
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>

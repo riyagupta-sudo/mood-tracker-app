@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Goals - Mood Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .goals-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.02);
+            border: 1px solid #F0F2F5;
+        }
+        .goal-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #F8F9FB;
+            border-radius: 12px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .goal-item:hover { background: #F0EDFE; }
+        .goal-item.completed {
+            opacity: 0.7;
+            text-decoration: line-through;
+            background: #eafaf1;
+        }
+        .goal-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary-purple);
+            border-radius: 6px;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+        }
+        .goal-item.completed .goal-checkbox {
+            background-color: var(--green);
+            border-color: var(--green);
+        }
+        .goal-item.missed .goal-checkbox {
+            background-color: var(--red);
+            border-color: var(--red);
+        }
+        .bonus-message {
+            margin-top: 30px;
+            padding: 20px;
+            background: var(--primary-purple-light);
+            border-radius: 12px;
+            text-align: center;
+            color: var(--primary-purple-dark);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-wrapper">
+        <div class="dashboard-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-menu">
+                    <div class="menu-item has-submenu">
+                        <div class="menu-title">
+                            <div class="title-left"><i class="fa-solid fa-border-all"></i> Dashboard</div>
+                        </div>
+                        <ul class="submenu">
+                            <li><a href="index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Mood Tracker</a></li>
+                            <li><a href="health_insight.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;">Health Insight</a></li>
+                            <li class="active"><a href="personal_goals.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; width:100%; gap:8px;"><span class="dot"></span> Personal Goals</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <header class="top-header">
+                    <div class="header-titles">
+                        <h1>Personal Goals</h1>
+                        <p>Track your daily habits. Small steps lead to big changes.</p>
+                    </div>
+                    <a href="index.html" class="auth-link-btn">← Back</a>
+                </header>
+
+                <div class="goals-container">
+                    <h3>Daily Habits Checklist</h3>
+                    <p class="subtitle" style="margin-bottom: 20px;">Check off the habits you complete today.</p>
+                    
+                    <form id="add-goal-form" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <input type="text" id="new-goal-input" placeholder="Type a customized goal..." required style="flex-grow: 1; padding: 12px 15px; border-radius: 12px; border: 1px solid #E4EBF4; font-family: inherit; font-size: 14px;">
+                        <button type="submit" style="background-color: var(--primary-purple); color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 500; cursor: pointer;">Add</button>
+                    </form>
+
+                    <div id="goal-list">
+                        <!-- Dynamic content renders here -->
+                    </div>
+
+                    <div class="bonus-message">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span><strong>Bonus Insight:</strong> You normally feel better when your daily goals are completed! Keep it up!</span>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const goalForm = document.getElementById('add-goal-form');
+            const goalInput = document.getElementById('new-goal-input');
+            const goalList = document.getElementById('goal-list');
+
+            // Load goals from local storage or set defaults
+            let goals = JSON.parse(localStorage.getItem('moodTrackerGoals'));
+            if (!goals) {
+                goals = [
+                    { id: Date.now()+1, text: 'Drink water', status: 'completed' },
+                    { id: Date.now()+2, text: 'Exercise', status: 'missed' },
+                    { id: Date.now()+3, text: 'Study', status: 'completed' },
+                    { id: Date.now()+4, text: 'Take a 5-minute walk', status: 'pending' }
+                ];
+                saveGoals();
+            }
+
+            function saveGoals() {
+                localStorage.setItem('moodTrackerGoals', JSON.stringify(goals));
+            }
+
+            function renderGoals() {
+                goalList.innerHTML = '';
+                goals.forEach(goal => {
+                    const div = document.createElement('div');
+                    div.className = `goal-item ${goal.status === 'completed' ? 'completed' : (goal.status === 'missed' ? 'missed' : '')}`;
+                    
+                    let icon = '';
+                    if (goal.status === 'completed') icon = '<i class="fa-solid fa-check"></i>';
+                    else if (goal.status === 'missed') icon = '<i class="fa-solid fa-xmark"></i>';
+
+                    div.innerHTML = `
+                        <div class="goal-checkbox">${icon}</div>
+                        <span style="font-weight: 500; flex-grow: 1;">${goal.text}</span>
+                        <i class="fa-regular fa-trash-can text-gray delete-btn" style="padding: 5px; cursor: pointer;"></i>
+                    `;
+
+                    // Toggle status logic
+                    div.addEventListener('click', (e) => {
+                        if(e.target.closest('.delete-btn')) return; // handled separately
+                        
+                        if (goal.status === 'pending') goal.status = 'completed';
+                        else if (goal.status === 'completed') goal.status = 'missed';
+                        else goal.status = 'pending';
+                        
+                        saveGoals();
+                        renderGoals();
+                    });
+
+                    // Delete logic
+                    const delBtn = div.querySelector('.delete-btn');
+                    delBtn.addEventListener('click', () => {
+                        goals = goals.filter(g => g.id !== goal.id);
+                        saveGoals();
+                        renderGoals();
+                    });
+
+                    goalList.appendChild(div);
+                });
+            }
+
+            goalForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = goalInput.value.trim();
+                if (text) {
+                    goals.push({ id: Date.now(), text: text, status: 'pending' });
+                    saveGoals();
+                    renderGoals();
+                    goalInput.value = '';
+                }
+            });
+
+            renderGoals();
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+</html>
