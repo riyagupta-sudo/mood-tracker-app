@@ -158,7 +158,7 @@ app.post('/api/journals', authenticateToken, (req, res) => {
 });
 
 // Get user's journals
-app.get('/api/journals', authenticateToken, (req, res) => {
+app.get('/api/moods', (req, res) => {
     db.all('SELECT * FROM journals WHERE user_id = ? ORDER BY target_date DESC', [req.user.id], (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);

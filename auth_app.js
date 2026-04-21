@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = 'https://mood-tracker-app-4.onrender.com/api';
 
 const loginForm = document.getElementById('loginForm');
 const signupForm = document.getElementById('signupForm');
@@ -24,7 +24,7 @@ if (loginForm) {
 
             localStorage.setItem('token', data.token);
             localStorage.setItem('user', JSON.stringify(data.user));
-            
+
             // Sync user data from cloud to local storage
             try {
                 const syncRes = await fetch(`${API_BASE_URL}/sync`, {
@@ -35,7 +35,7 @@ if (loginForm) {
                     if (syncData.moodHistory) localStorage.setItem('moodHistory', syncData.moodHistory);
                     if (syncData.moodJournals) localStorage.setItem('moodJournals', syncData.moodJournals);
                 }
-            } catch(e) { console.error('Error syncing down', e); }
+            } catch (e) { console.error('Error syncing down', e); }
 
             window.location.href = 'index.html';
 
@@ -71,10 +71,10 @@ if (signupForm) {
                 body: JSON.stringify({ email, password })
             });
             const loginData = await loginRes.json();
-            if(loginRes.ok) {
+            if (loginRes.ok) {
                 localStorage.setItem('token', loginData.token);
                 localStorage.setItem('user', JSON.stringify(loginData.user));
-                
+
                 try {
                     const syncRes = await fetch(`${API_BASE_URL}/sync`, {
                         headers: { 'Authorization': `Bearer ${loginData.token}` }
@@ -84,7 +84,7 @@ if (signupForm) {
                         if (syncData.moodHistory) localStorage.setItem('moodHistory', syncData.moodHistory);
                         if (syncData.moodJournals) localStorage.setItem('moodJournals', syncData.moodJournals);
                     }
-                } catch(e) { console.error('Error syncing down', e); }
+                } catch (e) { console.error('Error syncing down', e); }
 
                 window.location.href = 'index.html';
             }
