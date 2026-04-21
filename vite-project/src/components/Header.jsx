@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './Header.css';
 
 const Header = () => {
     const [date, setDate] = useState();
@@ -44,8 +45,8 @@ const Header = () => {
                 <div className="auth-links" id="auth-links">
                     {user ? (
                         <>
-                            <span className="user-welcome" style={{fontSize: '14px', fontWeight: '500', marginRight: '15px'}}>Hi, {user.name}</span>
-                            <button onClick={handleLogout} style={{background: 'none', border: '1px solid var(--red)', color: 'var(--red)', padding: '5px 12px', borderRadius: '8px', cursor: 'pointer'}}>Logout</button>
+                            <span className="user-welcome" style={{ fontSize: '14px', fontWeight: '500', marginRight: '15px' }}>Hi, {user.name}</span>
+                            <button onClick={handleLogout} style={{ background: 'none', border: '1px solid var(--red)', color: 'var(--red)', padding: '5px 12px', borderRadius: '8px', cursor: 'pointer' }}>Logout</button>
                         </>
                     ) : (
                         <>
@@ -54,12 +55,12 @@ const Header = () => {
                         </>
                     )}
                 </div>
-                <div className="date-picker" style={{padding:0}}>
-                    <input 
-                        type="date" 
+                <div className="date-picker" style={{ padding: 0 }}>
+                    <input
+                        type="date"
                         value={date || ''}
                         onChange={handleDateChange}
-                        style={{border: 'none', outline: 'none', padding: '10px 15px', borderRadius: '12px', fontFamily: 'inherit', color: 'var(--text-black)', fontWeight: '600', cursor: 'pointer', background: 'transparent'}}
+                        style={{ border: 'none', outline: 'none', padding: '10px 15px', borderRadius: '12px', fontFamily: 'inherit', color: 'var(--text-black)', fontWeight: '600', cursor: 'pointer', background: 'transparent' }}
                     />
                 </div>
             </div>
