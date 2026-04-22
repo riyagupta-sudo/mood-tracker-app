@@ -6,6 +6,7 @@ import WeeklyTrend from './WeeklyTrend';
 import DailyQuote from './DailyQuote';
 import DailyTrendChart from './DailyTrendChart';
 import SidePanel from './SidePanel';
+import DailyInsight from './DailyInsight';
 
 const Dashboard = () => {
     return (
@@ -29,14 +30,7 @@ const Dashboard = () => {
                         <SidePanel />
                     </div>
                     
-                    <div className="footer-insight">
-                        <div className="insight-label">
-                            <i className="fa-solid fa-location-dot purple-icon"></i> <b>Your Daily Insight</b>
-                        </div>
-                        <div className="insight-text">
-                            You've been tracking mood consistently. It's okay - let's focus on one thing you can control.
-                        </div>
-                    </div>
+                    <DailyInsight />
                 </main>
             </div>
         </div>
